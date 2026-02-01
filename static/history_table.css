@@ -1,0 +1,79 @@
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 12px;
+  background: #ffffff;
+}
+
+/* Header */
+.history-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  color: #374151;
+  font-weight: 600;
+  text-align: right;
+  padding: 10px 12px;
+  border-bottom: 2px solid #e5e7eb;
+  z-index: 1;
+}
+
+/* First column (Date) left aligned */
+.history-table thead th:first-child,
+.history-table tbody td:first-child {
+  text-align: left;
+}
+
+/* Body cells */
+.history-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: right;
+  color: #111827;
+}
+
+/* Zebra striping */
+.history-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+/* Hover effect */
+.history-table tbody tr:hover {
+  background-color: #eef2ff;
+}
+
+/* Volume column slightly muted */
+.history-table tbody td:last-child {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* ===============================
+   Table container (scrollable)
+   =============================== */
+
+.table-wrap {
+  max-height: 320px;           /* makes it scrollable */
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 4px;
+  background: #ffffff;
+}
+
+/* ===============================
+   Responsive tweaks
+   =============================== */
+
+@media (max-width: 768px) {
+  .history-table {
+    font-size: 13px;
+  }
+
+  .history-table thead th,
+  .history-table tbody td {
+    padding: 6px 8px;
+  }
+}

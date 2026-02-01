@@ -1,0 +1,16 @@
+.metric-card {
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+section {
+  margin-bottom: 20px;
+}
+
+.disclaimer {
+  color: #777;
+  font-style: italic;
+}
