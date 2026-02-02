@@ -50,7 +50,7 @@ Your Guidelines:
 
 Provide institutional-quality analysis while maintaining objectivity."""
 
-USER_TMPL_BEGINNER = """Please analyze this stock and explain it in simple terms for a beginner investor:
+USER_TMPL_BASIC = """Please analyze this stock and explain it in simple terms for a beginner investor:
 
 **Company Information:**
 - Name: {name} ({symbol})
@@ -62,7 +62,6 @@ USER_TMPL_BEGINNER = """Please analyze this stock and explain it in simple terms
 - Currency: {currency}
 - Current price: {price}
 - Change %: {change_percent}
-- Day Range: 
 
 **Key Metrics:**
 - Market cap: {market_cap}
@@ -80,12 +79,7 @@ Please provide:
 
 Keep your response educational and easy to understand."""
 
-beginner_prompt_template = ChatPromptTemplate.from_messages([
-    ('system', SYSTEM_PROMPT_BEGINNER),
-    ('human', USER_TMPL_BEGINNER)
-])
-
-USER_TMPL_ADVANCED = """Please analyze this stock in a detailed, structured way for an intermediate investor:
+USER_TMPL_DETAILED = """Please analyze this stock in a detailed, structured way for an intermediate investor:
 
 **Company Profile:**
 - Name: {name} ({symbol})
@@ -145,7 +139,53 @@ Please provide:
 
 Keep the response thorough but organized, and explain any metric you rely on in 1-2 lines before interpreting it."""
 
-detailed_prompt_template = ChatPromptTemplate.from_messages([
-    ('system', USER_TMPL_BEGINNER),
-    ('human', USER_TMPL_ADVANCED)
+beginner_basic_prompt_template = ChatPromptTemplate.from_messages([
+    ('system', SYSTEM_PROMPT_BEGINNER),
+    ('human', USER_TMPL_BASIC)
 ])
+
+beginner_detailed_prompt_template = ChatPromptTemplate.from_messages([
+    ('system', SYSTEM_PROMPT_BEGINNER),
+    ('human', USER_TMPL_DETAILED)
+])
+
+intermediate_basic_prompt_template = ChatPromptTemplate.from_messages([
+    ('system', SYSTEM_PROMPT_INTERMEDIATE),
+    ('human', USER_TMPL_BASIC)
+])
+
+intermediate_detailed_prompt_template = ChatPromptTemplate.from_messages([
+    ('system', SYSTEM_PROMPT_INTERMEDIATE),
+    ('human', USER_TMPL_DETAILED)
+])
+
+advanced_basic_prompt_template = ChatPromptTemplate.from_messages([
+    ('system', SYSTEM_PROMPT_ADVANCED),
+    ('human', USER_TMPL_BASIC)
+])
+
+advanced_detailed_prompt_template = ChatPromptTemplate.from_messages([
+    ('system', SYSTEM_PROMPT_ADVANCED),
+    ('human', USER_TMPL_DETAILED)
+])
+
+def get_prompt(analysis_level, analysis_type, result):
+    if analysis_level == "beginner":
+        if analysis_type == "basic":
+            return beginner_basic_prompt_template.invoke(result)
+        elif analysis_type == "detailed":
+            return beginner_detailed_prompt_template.invoke(result)
+
+    elif analysis_level == "intermediate":
+        if analysis_type == "basic":
+            return intermediate_basic_prompt_template.invoke(result)
+        elif analysis_type == "detailed":
+            return intermediate_detailed_prompt_template.invoke(result)
+
+    elif analysis_level == "advanced":
+        if analysis_type == "basic":
+            return advanced_basic_prompt_template.invoke(result)
+        elif analysis_type == "detailed":
+            return advanced_detailed_prompt_template.invoke(result)
+
+    raise ValueError("Invalid analysis level or type")

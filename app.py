@@ -4,7 +4,7 @@ from langchain_core.output_parsers import StrOutputParser
 from config import APP_ICON, APP_TITLE, DEFAULT_TICKER
 from dotenv import load_dotenv
 from stock_data import get_stock_data, get_30_day_history
-from prompts import beginner_prompt_template
+from prompts import get_prompt
 from structured_output import Review
 
 load_dotenv()
@@ -36,7 +36,19 @@ def check_api():
 @app.route("/get-data", methods=["POST"])
 def get_data():
     data = request.get_json()
+    
+    # ticker symbol of the stock
     value = data.get("value")
+
+    # user experience level
+    analysis_level = data.get("analysis_level")
+
+    # analysis type that user wants
+    analysis_type = data.get("analysis_type")
+
+    # printing
+    print(analysis_level)
+    print(analysis_type)
 
     result = get_stock_data(value)
 
@@ -44,9 +56,9 @@ def get_data():
 
     structured_llm = llm.with_structured_output(Review)
 
-    beginner_prompt = beginner_prompt_template.invoke(result)
+    prompt = get_prompt(analysis_level, analysis_type, result)
 
-    llm_response = structured_llm.invoke(beginner_prompt)
+    llm_response = structured_llm.invoke(prompt)
 
     llm_response_json = llm_response.model_dump()
     

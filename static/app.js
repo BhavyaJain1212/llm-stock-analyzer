@@ -50,11 +50,11 @@ function renderAnalysis(analysis) {
   document.getElementById("disclaimerText").textContent =
     analysis.disclaimer;
 
-  // 4. Beginner takeaways
+  // 4. takeaways
   const takeawaysEl = document.getElementById("takeawaysList");
   takeawaysEl.innerHTML = "";
 
-  analysis.beginner_takeaways.forEach(item => {
+  analysis.takeaways.forEach(item => {
     const li = document.createElement("li");
     li.textContent = item;
     takeawaysEl.appendChild(li);
@@ -93,7 +93,14 @@ function renderAnalysis(analysis) {
 
 // get respone from yfinance
 document.getElementById("analyzeBtn").addEventListener("click", async () => {
+    console.log("button clicked")
     const userInput = document.getElementById("tickerInput").value;
+
+    // user experience level
+    const analysisLevel = document.getElementById("analysisLevel").value
+
+    // analysis level that user wants
+    const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
 
     const response = await fetch("/get-data", {
         method: "POST",
@@ -103,7 +110,9 @@ document.getElementById("analyzeBtn").addEventListener("click", async () => {
         // header is meant to tell Flask that "Hey, I'm sending JSON"
 
         body: JSON.stringify({
-            value: userInput   // 👈 sent to Flask
+            value: userInput,   // 👈 sent to Flask
+            analysis_level: analysisLevel,
+            analysis_type: analysisType
         })
     });
     // fetch is a browser function to make http calls. /get-data is the url path to the server
