@@ -95,7 +95,7 @@ function renderAnalysis(analysis) {
 const analyzeBtn = document.getElementById("analyzeBtn");
 const tickerInputEl = document.getElementById("tickerInput");
 const tickerSpinnerEl = document.getElementById("tickerSpinner");
-const analyzeBtnOriginalHtml = analyzeBtn ? analyzeBtn.innerHTML : "";
+const analyzeBtnOriginalHtml = analyzeBtn.innerHTML;
 
 function setLoadingState(isLoading) {
   if (!analyzeBtn || !tickerSpinnerEl) return;
@@ -104,33 +104,30 @@ function setLoadingState(isLoading) {
     analyzeBtn.disabled = true;
     analyzeBtn.innerText = "Analyzing...";
     tickerSpinnerEl.classList.remove("d-none");
-    tickerSpinnerEl.style.display = "inline-block";
+    tickerSpinnerEl.style.display = "block";
   } else {
     analyzeBtn.disabled = false;
-    analyzeBtn.innerHTML = analyzeBtnOriginalHtml || "📊 Analyze Stock";
+    analyzeBtn.innerHTML = analyzeBtnOriginalHtml;
     tickerSpinnerEl.classList.add("d-none");
-    tickerSpinnerEl.style.display = "none";
+    tickerSpinnerEl.style.display = "";
   }
 }
 
 analyzeBtn.addEventListener("click", async () => {
-  console.log("button clicked");
-
   const userInput = tickerInputEl.value.trim();
   if (!userInput) {
     tickerInputEl.focus();
     return;
   }
 
-  // user experience level
   const analysisLevel = document.getElementById("analysisLevel").value;
-
-  // analysis level that user wants
   const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
 
-  setLoadingState(true);
-
   try {
+    setLoadingState(true);
+    // Give the browser time to paint the spinner before we block on fetch
+    await new Promise((r) => setTimeout(r, 50));
+
     const response = await fetch("/get-data", {
       method: "POST",
       headers: {
@@ -143,8 +140,7 @@ analyzeBtn.addEventListener("click", async () => {
         analysis_type: analysisType
       })
     });
-    // fetch is a browser function to make http calls. /get-data is the url path to the server
-
+    
     // await means wait till the server replies. once the server replies its content is stored in the variable respones. 
     
     if (!response.ok) {
@@ -152,12 +148,16 @@ analyzeBtn.addEventListener("click", async () => {
     }
 
     const data = await response.json();
-    document.getElementById("results").classList.remove("hidden");
+    document.getElementById("results").classList.remove("d-none");
     console.log(data);
 
     const stock = data.stock_data;
     const analysis = data.analysis;
     const history = data.history;
+
+    // changin analysis level and type
+    document.getElementById("chipLevel").textContent = `Level: ${analysisLevel}`
+    document.getElementById("chipType").textContent = `Type: ${analysisType}`
 
     // changing found pill
     document.getElementById("foundName").textContent = stock.name;
