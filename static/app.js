@@ -91,69 +91,111 @@ function renderAnalysis(analysis) {
 
 
 
-// get respone from yfinance
-document.getElementById("analyzeBtn").addEventListener("click", async () => {
-    console.log("button clicked")
-    const userInput = document.getElementById("tickerInput").value;
+// get response from yfinance + handle spinner / button state
+const analyzeBtn = document.getElementById("analyzeBtn");
+const tickerInputEl = document.getElementById("tickerInput");
+const tickerSpinnerEl = document.getElementById("tickerSpinner");
+const analyzeBtnOriginalHtml = analyzeBtn ? analyzeBtn.innerHTML : "";
 
-    // user experience level
-    const analysisLevel = document.getElementById("analysisLevel").value
+function setLoadingState(isLoading) {
+  if (!analyzeBtn || !tickerSpinnerEl) return;
 
-    // analysis level that user wants
-    const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
+  if (isLoading) {
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerText = "Analyzing...";
+    tickerSpinnerEl.classList.remove("d-none");
+  } else {
+    analyzeBtn.disabled = false;
+    analyzeBtn.innerHTML = analyzeBtnOriginalHtml || "📊 Analyze Stock";
+    tickerSpinnerEl.classList.add("d-none");
+  }
+}
 
+analyzeBtn.addEventListener("click", async () => {
+  console.log("button clicked");
+
+  const userInput = tickerInputEl.value.trim();
+  if (!userInput) {
+    tickerInputEl.focus();
+    return;
+  }
+
+  // user experience level
+  const analysisLevel = document.getElementById("analysisLevel").value;
+
+  // analysis level that user wants
+  const analysisType = document.querySelector('input[name="analysisType"]:checked').value;
+
+  setLoadingState(true);
+
+  try {
     const response = await fetch("/get-data", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        // header is meant to tell Flask that "Hey, I'm sending JSON"
-
-        body: JSON.stringify({
-            value: userInput,   // 👈 sent to Flask
-            analysis_level: analysisLevel,
-            analysis_type: analysisType
-        })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      // header is meant to tell Flask that "Hey, I'm sending JSON"
+      body: JSON.stringify({
+        value: userInput,   // 👈 sent to Flask
+        analysis_level: analysisLevel,
+        analysis_type: analysisType
+      })
     });
     // fetch is a browser function to make http calls. /get-data is the url path to the server
 
     // await means wait till the server replies. once the server replies its content is stored in the variable respones. 
     
+    if (!response.ok) {
+      throw new Error("Request failed with status " + response.status);
+    }
 
     const data = await response.json();
     document.getElementById("results").classList.remove("hidden");
-    console.log(data)
+    console.log(data);
 
-    const stock = data.stock_data
-    const analysis = data.analysis
-    const history = data.history
+    const stock = data.stock_data;
+    const analysis = data.analysis;
+    const history = data.history;
 
     // changing found pill
-    document.getElementById("foundName").textContent = stock.name
-    document.getElementById("foundSymbol").textContent = userInput
+    document.getElementById("foundName").textContent = stock.name;
+    document.getElementById("foundSymbol").textContent = userInput;
 
     // changing key metrics by getting results from data
-    document.getElementById("mPe").textContent = stock.pe_ratio
-    document.getElementById("mHigh").textContent = stock.week_52_high
-    document.getElementById("mLow").textContent = stock.week_52_low
-    document.getElementById("mMcap").textContent = stock.market_cap
-    document.getElementById("mVol").textContent = stock.avg_volume
-    document.getElementById("mDiv").textContent = stock.dividend_yield
-    document.getElementById("mSector").textContent = stock.sector
-    document.getElementById("mPrice").textContent = stock.price
-    document.getElementById("mDelta").textContent = stock.change_percent
+    document.getElementById("mPe").textContent = stock.pe_ratio;
+    document.getElementById("mHigh").textContent = stock.week_52_high;
+    document.getElementById("mLow").textContent = stock.week_52_low;
+    document.getElementById("mMcap").textContent = stock.market_cap;
+    document.getElementById("mVol").textContent = stock.avg_volume;
+    document.getElementById("mDiv").textContent = stock.dividend_yield;
+    document.getElementById("mSector").textContent = stock.sector;
+    document.getElementById("mPrice").textContent = stock.price;
+    document.getElementById("mDelta").textContent = stock.change_percent;
 
-    console.log(history)
-    console.log(analysis)
+    console.log(history);
+    console.log(analysis);
 
     // changing html to view last 30 days history of the stock
-    renderHistory(history)
+    renderHistory(history);
 
-    document.getElementById("historyHint").textContent = ""
+    document.getElementById("historyHint").textContent = "";
 
-    // outputing llm respose
-    renderAnalysis(analysis)
+    // outputting llm respose
+    renderAnalysis(analysis);
 
     // viewing raw data
-    document.getElementById("rawJson").textContent = JSON.stringify(stock, null, 2)
+    document.getElementById("rawJson").textContent = JSON.stringify(stock, null, 2);
+  } catch (err) {
+    console.error(err);
+    const messageArea = document.getElementById("messageArea");
+    if (messageArea) {
+      messageArea.innerHTML = `
+        <div class="alert error">
+          There was an error loading the analysis. Please try again.
+        </div>
+      `;
+    }
+  } finally {
+    setLoadingState(false);
+  }
 });
