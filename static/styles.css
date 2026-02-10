@@ -365,6 +365,16 @@ body{
   font-size:13px;
 }
 
+/* Fallback styling for ticker input spinner so it remains visible
+   even if Bootstrap spinner styles are unavailable */
+#tickerSpinner{
+  width:1rem;
+  height:1rem;
+  border-radius:50%;
+  border:0.15em solid rgba(148,163,184,0.4);
+  border-top-color:rgba(15,23,42,0.8);
+}
+
 @media (max-width: 980px){
   .app{grid-template-columns:1fr}
   .sidebar{position:relative;height:auto}

@@ -104,10 +104,12 @@ function setLoadingState(isLoading) {
     analyzeBtn.disabled = true;
     analyzeBtn.innerText = "Analyzing...";
     tickerSpinnerEl.classList.remove("d-none");
+    tickerSpinnerEl.style.display = "inline-block";
   } else {
     analyzeBtn.disabled = false;
     analyzeBtn.innerHTML = analyzeBtnOriginalHtml || "📊 Analyze Stock";
     tickerSpinnerEl.classList.add("d-none");
+    tickerSpinnerEl.style.display = "none";
   }
 }
 
