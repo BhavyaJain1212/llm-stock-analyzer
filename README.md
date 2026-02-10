@@ -1,5 +1,7 @@
 # LLM Stock Analyzer (Flask + LangChain)
 
+(work in progress..)
+
 A beginner-friendly stock analyzer that fetches stock data and generates a structured analysis using an LLM.  
 Frontend renders the analysis into clean sections (overview, metrics, range analysis, takeaways, concerns).
 
