@@ -8,7 +8,7 @@ Frontend renders the analysis into clean sections (overview, metrics, range anal
 ## Tech Stack
 - Python + Flask
 - LangChain (LLM orchestration)
-- Vanilla JS + HTML/CSS
+- Vanilla JS + HTML/CSS + bootstrap
 
 ## Setup
 
