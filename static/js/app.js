@@ -16,8 +16,6 @@ analyzeBtn.addEventListener("click", async () => {
 
   try {
     setLoadingState(true);
-    // Give the browser time to paint the spinner before we block on fetch
-    await new Promise((r) => setTimeout(r, 50));
 
     const response = await fetch("/get-data", {
       method: "POST",
@@ -31,17 +29,24 @@ analyzeBtn.addEventListener("click", async () => {
         analysis_type: analysisType
       })
     });
-    
+
     // await means wait till the server replies. once the server replies its content is stored in the variable respones. 
-    
-    if (!response.ok) {
-      throw new Error("Request failed with status " + response.status);
-    }
 
     const data = await response.json();
+
+    if (!response.ok) {
+      const message = data.message;
+      throw new Error(message);
+    }
+
+    // hiding alert section and showing result section
+    document.getElementById("messageArea").classList.add("d-none");
     document.getElementById("results").classList.remove("d-none");
+
+    // printing data to console
     console.log(data);
 
+    // get stock, analysis, and history data
     const stock = data.stock_data;
     const analysis = data.analysis;
     const history = data.history;
@@ -65,6 +70,7 @@ analyzeBtn.addEventListener("click", async () => {
     document.getElementById("mPrice").textContent = stock.price;
     document.getElementById("mDelta").textContent = stock.change_percent;
 
+    // outputing history and analysis to console. 
     console.log(history);
     console.log(analysis);
 
@@ -78,13 +84,21 @@ analyzeBtn.addEventListener("click", async () => {
 
     // viewing raw data
     document.getElementById("rawJson").textContent = JSON.stringify(stock, null, 2);
+
   } catch (err) {
     console.error(err);
+
     const messageArea = document.getElementById("messageArea");
+
+    // hiding result section and showing alert section
+    messageArea.classList.remove('d-none')
+    document.getElementById("results").classList.add("d-none");
+    
+    // adding alert card
     if (messageArea) {
       messageArea.innerHTML = `
-        <div class="alert error">
-          There was an error loading the analysis. Please try again.
+        <div class="alert alert-danger" role="alert">
+          ${err.message}
         </div>
       `;
     }

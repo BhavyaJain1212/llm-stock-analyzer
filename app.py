@@ -52,6 +52,13 @@ def get_data():
 
     result = get_stock_data(value)
 
+    if result is None:
+        return jsonify({
+            "success": False,
+            "error_code": "INVALID_TICKER",
+            "message": f"Ticker '{value}' not found. Please check and try again"
+        }), 400
+
     history = get_30_day_history(value)
 
     structured_llm = llm.with_structured_output(Review)

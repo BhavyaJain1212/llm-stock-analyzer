@@ -25,12 +25,18 @@ def get_stock_data(ticker: str) -> Optional[Dict]: # the function may return eit
     try:
         # Create ticker object
         stock = yf.Ticker(ticker.upper())
+        
         info = stock.info
 
         price = info.get('regularMarketPrice')
+        symbol = info.get('symbol')
+        quote_type = info.get("quoteType")
 
+        if price is None or symbol is None or quote_type is None:
+            return None
+        
             # Build comprehensive data dictionary
-        return {
+        info_val_dict =  {
             # Basic Info
             "symbol": ticker.upper(),
             "name": info.get("longName") or info.get("shortName", "Unknown"),
@@ -117,7 +123,11 @@ def get_stock_data(ticker: str) -> Optional[Dict]: # the function may return eit
             "fetch_time": datetime.now().isoformat(),
             "is_demo": False,  # Real data flag
             }
+        
+        return info_val_dict
+    
     except Exception as e:
+        print('hello world')
         error_message = str(e)
         print(f"Error fetching data for {ticker}: {error_message}")
 
