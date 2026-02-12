@@ -69,15 +69,6 @@ def get_data():
 
     llm_response_json = llm_response.model_dump()
     
-    # parser
-    # parser = StrOutputParser()
-
-    # chain = beginner_prompt_template | model | parser
-
-    # llm_response = chain.invoke(result)
-
-    # print(type(llm_response.content))
-
     return jsonify({
         "stock_data": result,                          # dict
         "analysis": llm_response_json,     # string
